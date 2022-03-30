@@ -20,7 +20,7 @@ using namespace std::chrono_literals;
 
 namespace {
 
-const double MaxToleratedError = 0.5;
+// const double MaxToleratedError = 0.5;
 
 using namespace concord::performance;
 
@@ -175,68 +175,68 @@ TEST(IntervalMappingResourceManager_test, periodic_interval) {
   }
 }
 
-TEST(IntervalMappingResourceManager_test, tps_drop_due_to_pruning_mitigation) {
-  std::vector<std::pair<uint64_t, uint64_t>> mapping{{60, 40}, {100, 30}, {300, 20}, {500, 10}};
-  auto consensusEngineResourceMonitor = ResourceEntityMock{};
-  auto interval_mapping = IntervalMappingResourceManager::createIntervalMappingResourceManager(
-      consensusEngineResourceMonitor, std::move(mapping), IntervalMappingResourceManagerConfiguration{});
+// TEST(IntervalMappingResourceManager_test, tps_drop_due_to_pruning_mitigation) {
+//   std::vector<std::pair<uint64_t, uint64_t>> mapping{{60, 40}, {100, 30}, {300, 20}, {500, 10}};
+//   auto consensusEngineResourceMonitor = ResourceEntityMock{};
+//   auto interval_mapping = IntervalMappingResourceManager::createIntervalMappingResourceManager(
+//       consensusEngineResourceMonitor, std::move(mapping), IntervalMappingResourceManagerConfiguration{});
 
-  // reset every three calls
-  interval_mapping->setPeriod(20);
-  // First prune info is 0
-  consensusEngineResourceMonitor.measurements = 110;
-  consensusEngineResourceMonitor.cpuMeasurements = 0;
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_EQ(prune_info.blocksPerSecond, 0);
-  }
+//   // reset every three calls
+//   interval_mapping->setPeriod(20);
+//   // First prune info is 0
+//   consensusEngineResourceMonitor.measurements = 110;
+//   consensusEngineResourceMonitor.cpuMeasurements = 0;
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_EQ(prune_info.blocksPerSecond, 0);
+//   }
 
-  consensusEngineResourceMonitor.measurements = 110;
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_EQ(prune_info.blocksPerSecond, 20);
-  }
+//   consensusEngineResourceMonitor.measurements = 110;
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_EQ(prune_info.blocksPerSecond, 20);
+//   }
 
-  consensusEngineResourceMonitor.measurements = 90;
-  consensusEngineResourceMonitor.cpuMeasurements = 80;
-  // Too much tps is lost. Slow down pruning
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_LT(abs(prune_info.blocksPerSecond - 6), MaxToleratedError);
-  }
+//   consensusEngineResourceMonitor.measurements = 90;
+//   consensusEngineResourceMonitor.cpuMeasurements = 80;
+//   // Too much tps is lost. Slow down pruning
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_LT(abs(prune_info.blocksPerSecond - 6), MaxToleratedError);
+//   }
 
-  consensusEngineResourceMonitor.measurements = 400;
-  consensusEngineResourceMonitor.cpuMeasurements = 50;
-  // Tps is growing and pruning ulization is on acceptable level, so mapping to 10
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_LT(abs(prune_info.blocksPerSecond - 10), MaxToleratedError);
-  }
+//   consensusEngineResourceMonitor.measurements = 400;
+//   consensusEngineResourceMonitor.cpuMeasurements = 50;
+//   // Tps is growing and pruning ulization is on acceptable level, so mapping to 10
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_LT(abs(prune_info.blocksPerSecond - 10), MaxToleratedError);
+//   }
 
-  consensusEngineResourceMonitor.measurements = 380;
-  consensusEngineResourceMonitor.cpuMeasurements = 90;
-  // Pruning utlization is high but the loss in the tps is acceptable
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_LT(abs(prune_info.blocksPerSecond - 10), MaxToleratedError);
-  }
+//   consensusEngineResourceMonitor.measurements = 380;
+//   consensusEngineResourceMonitor.cpuMeasurements = 90;
+//   // Pruning utlization is high but the loss in the tps is acceptable
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_LT(abs(prune_info.blocksPerSecond - 10), MaxToleratedError);
+//   }
 
-  consensusEngineResourceMonitor.measurements = 180;
-  consensusEngineResourceMonitor.cpuMeasurements = 90;
-  // tps drops naturally, but for safety adjustment is made
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_LT(abs(prune_info.blocksPerSecond - 2), MaxToleratedError);
-  }
+//   consensusEngineResourceMonitor.measurements = 180;
+//   consensusEngineResourceMonitor.cpuMeasurements = 90;
+//   // tps drops naturally, but for safety adjustment is made
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_LT(abs(prune_info.blocksPerSecond - 2), MaxToleratedError);
+//   }
 
-  consensusEngineResourceMonitor.measurements = 180;
-  consensusEngineResourceMonitor.cpuMeasurements = 20;
-  // tps stable - resources to prune
-  {
-    auto prune_info = interval_mapping->getPruneInfo();
-    ASSERT_LT(abs(prune_info.blocksPerSecond - 20), MaxToleratedError);
-  }
-}
+//   consensusEngineResourceMonitor.measurements = 180;
+//   consensusEngineResourceMonitor.cpuMeasurements = 20;
+//   // tps stable - resources to prune
+//   {
+//     auto prune_info = interval_mapping->getPruneInfo();
+//     ASSERT_LT(abs(prune_info.blocksPerSecond - 20), MaxToleratedError);
+//   }
+// }
 }  // anonymous namespace
 
 int main(int argc, char* argv[]) {
