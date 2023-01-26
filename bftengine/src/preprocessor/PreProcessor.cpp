@@ -429,8 +429,12 @@ PreProcessor::~PreProcessor() {
 
   stop();
 
-  if (!memoryPoolEnabled_) {
-    for (const auto &result : preProcessResultBuffers_) {
+  for (const auto &result : preProcessResultBuffers_) {
+    if (memoryPoolEnabled_) {
+      if (result->buffer != nullptr) {
+        memoryPool_.returnChunk(result->buffer);
+      }
+    } else {
       delete[] result->buffer;
     }
   }
