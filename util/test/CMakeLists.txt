@@ -65,9 +65,9 @@ add_executable(simple_memory_pool_test simple_memory_pool_test.cpp)
 add_test(simple_memory_pool_test simple_memory_pool_test)
 target_link_libraries(simple_memory_pool_test GTest::Main util)
 
-add_executable(RawMemoryPool_test RawMemoryPool_test.cpp)
-add_test(RawMemoryPool_test RawMemoryPool_test)
-target_link_libraries(RawMemoryPool_test GTest::Main util)
+add_executable(MultiSizeBufferPool_test MultiSizeBufferPool_test.cpp)
+add_test(MultiSizeBufferPool_test MultiSizeBufferPool_test)
+target_link_libraries(MultiSizeBufferPool_test GTest::Main util)
 
 add_executable(openssl_utils_test openssl_utils_test.cpp )
 add_test(openssl_utils_test openssl_utils_test)
