@@ -14,11 +14,11 @@ set(util_source_files
     src/throughput.cpp
     src/crypto/crypto.cpp
     src/openssl/certificates.cpp
-    src/RawMemoryPool.cpp
+    src/MultiSizeBufferPool.cpp
     src/config_file_parser.cpp
     src/io.cpp)
 add_library(util STATIC ${util_source_files} src/crypto/factory.cpp)
-
+target_link_libraries(util PUBLIC diagnostics)
 if(USE_OPENSSL)
         set(OPENSSL_USE_STATIC_LIBS TRUE)
     find_package(OpenSSL REQUIRED)
@@ -34,7 +34,11 @@ if(NOT BUILD_CONFIG_GEN_TOOL_FOR_MAC)
     target_link_libraries(util PUBLIC stdc++fs)
 endif()
 
-target_include_directories(util PUBLIC include include/openssl ${Boost_INCLUDE_DIR})
+target_include_directories(util PUBLIC include
+  ${libdiagnostics_SOURCE_DIR}/include
+  include/openssl
+  ${Boost_INCLUDE_DIR}
+)
 if(BUILD_CONFIG_GEN_TOOL_FOR_MAC)
     target_include_directories(util PUBLIC ${OPENSSL_ROOT_DIR}/include)
 endif()
